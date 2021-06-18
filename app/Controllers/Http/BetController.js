@@ -1,8 +1,7 @@
-'use strict'
+"use strict";
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
+const Bet = use("App/Models/Bet");
+const Game = use("App/Models/Game");
 
 /**
  * Resourceful controller for interacting with bets
@@ -11,83 +10,32 @@ class BetController {
   /**
    * Show a list of all bets.
    * GET bets
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
+  async index({ params, request }) {
+    const queryParams = request.get();
+    const bets = await Bet.query().where("user_id", params.users_id).fetch();
+    const filteredBets = queryParams.game_id
+      ? bets.rows.filter((bet) => bet.game_id === Number(queryParams.game_id))
+      : bets;
 
-  /**
-   * Render a form to be used for creating a new bet.
-   * GET bets/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+    return filteredBets;
   }
 
   /**
    * Create/save a new bet.
    * POST bets
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
-  }
+  async store({ request, response, auth }) {
+    const data = request.only(["game_id", "numbers"]);
 
-  /**
-   * Display a single bet.
-   * GET bets/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async show ({ params, request, response, view }) {
-  }
+    const bet = await Bet.create({
+      ...data,
+      numbers: JSON.stringify(data.numbers),
+      user_id: auth.user.id,
+    });
 
-  /**
-   * Render a form to update an existing bet.
-   * GET bets/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
-  }
-
-  /**
-   * Update bet details.
-   * PUT or PATCH bets/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async update ({ params, request, response }) {
-  }
-
-  /**
-   * Delete a bet with id.
-   * DELETE bets/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async destroy ({ params, request, response }) {
+    return bet;
   }
 }
 
-module.exports = BetController
+module.exports = BetController;

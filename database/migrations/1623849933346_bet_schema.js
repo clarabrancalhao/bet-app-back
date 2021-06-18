@@ -13,11 +13,16 @@ class BetSchema extends Schema {
         .references("id")
         .inTable("users")
         .onUpdate("CASCADE")
-        .onDelete("CASCADE");
-      table.string("type");
-      table.string("color");
-      table.float("price");
-      table.integer("numbers");
+        .onDelete("CASCADE")
+        .notNullable();
+      table
+        .integer("game_id")
+        .unsigned()
+        .references("id")
+        .inTable("games")
+        .onUpdate("CASCADE")
+        .onDelete("NO ACTION");
+      table.json("numbers").notNullable();
       table.timestamps();
     });
   }
