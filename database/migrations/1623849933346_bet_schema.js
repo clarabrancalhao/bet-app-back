@@ -21,7 +21,7 @@ class BetSchema extends Schema {
         .references("id")
         .inTable("games")
         .onUpdate("CASCADE")
-        .onDelete("NO ACTION");
+        .onDelete("CASCADE");
       table.json("numbers").notNullable();
       table.timestamps();
     });

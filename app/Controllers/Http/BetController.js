@@ -11,14 +11,20 @@ class BetController {
    * Show a list of all bets.
    * GET bets
    */
-  async index({ params, request }) {
-    const queryParams = request.get();
-    const bets = await Bet.query().where("user_id", params.users_id).fetch();
-    const filteredBets = queryParams.game_id
-      ? bets.rows.filter((bet) => bet.game_id === Number(queryParams.game_id))
-      : bets;
-
-    return filteredBets;
+  async index({ params: { users_id }, request }) {
+    const { game_id } = request.get();
+    const allBets = await Bet.query()
+      .where("user_id", users_id)
+      .with("game")
+      .fetch();
+    const bets = !!game_id
+      ? await Bet.query()
+          .where("user_id", users_id)
+          .where("game_id", game_id)
+          .with("game")
+          .fetch()
+      : allBets;
+    return bets;
   }
 
   /**
@@ -27,14 +33,22 @@ class BetController {
    */
   async store({ request, response, auth }) {
     const data = request.only(["game_id", "numbers"]);
+    const game = await Game.findOrFail(data.game_id);
+    if (data.numbers.length <= game["max-number"]) {
+      console.log("aqui");
+      const bet = await Bet.create({
+        ...data,
+        numbers: JSON.stringify(data.numbers),
+        user_id: auth.user.id,
+      });
 
-    const bet = await Bet.create({
-      ...data,
-      numbers: JSON.stringify(data.numbers),
-      user_id: auth.user.id,
+      return bet;
+    }
+    response.status(400).send({
+      error: {
+        message: "Quantidade máxima de números selecionados excedida!",
+      },
     });
-
-    return bet;
   }
 }
 
