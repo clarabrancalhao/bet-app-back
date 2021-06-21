@@ -4,7 +4,7 @@
 const Model = use("Model");
 
 class Game extends Model {
-  bet() {
+  bets() {
     return this.hasMany("App/Models/Bet");
   }
 }
