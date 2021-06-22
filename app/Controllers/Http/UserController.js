@@ -4,11 +4,19 @@ const User = use("App/Models/User");
 
 class UserController {
   async store({ request }) {
-    const data = request.only(["username", "email", "password"]);
+    try {
+      const data = request.only(["username", "email", "password"]);
 
-    const user = await User.create(data);
+      const user = await User.create(data);
 
-    return user;
+      return user;
+    } catch (err) {
+      return response.status(err.status).send({
+        error: {
+          message: "Algo não deu certo, confira os dados e tente novamente.",
+        },
+      });
+    }
   }
 }
 

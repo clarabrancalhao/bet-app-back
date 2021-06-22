@@ -23,6 +23,7 @@ class BetSchema extends Schema {
         .onUpdate("CASCADE")
         .onDelete("CASCADE");
       table.json("numbers").notNullable();
+      table.float("price").notNullable();
       table.timestamps();
     });
   }

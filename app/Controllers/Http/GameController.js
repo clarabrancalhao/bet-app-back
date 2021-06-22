@@ -22,19 +22,25 @@ class GameController {
    * POST games
    */
   async store({ request, response }) {
-    const data = request.only([
-      "type",
-      "color",
-      "price",
-      "range",
-      "max-number",
-      "description",
-      "min-cart-value",
-    ]);
+    try {
+      const data = request.only([
+        "type",
+        "color",
+        "price",
+        "range",
+        "max-number",
+        "description",
+        "min-cart-value",
+      ]);
 
-    const game = await Game.create(data);
+      const game = await Game.create(data);
 
-    return game;
+      return game;
+    } catch (err) {
+      return response.status(err.status).send({
+        error: { message: "Algo não deu certo" },
+      });
+    }
   }
 
   /**
@@ -42,22 +48,28 @@ class GameController {
    * PUT or PATCH games/:id
    */
   async update({ params, request, response }) {
-    const game = await Game.findOrFail(params.id);
-    const data = request.only([
-      "type",
-      "color",
-      "price",
-      "range",
-      "max-number",
-      "description",
-      "min-cart-value",
-    ]);
+    try {
+      const game = await Game.findOrFail(params.id);
+      const data = request.only([
+        "type",
+        "color",
+        "price",
+        "range",
+        "max-number",
+        "description",
+        "min-cart-value",
+      ]);
 
-    game.merge(data);
+      game.merge(data);
 
-    await game.save();
+      await game.save();
 
-    return game;
+      return game;
+    } catch (err) {
+      return response.status(err.status).send({
+        error: { message: "Algo não deu certo" },
+      });
+    }
   }
 
   /**
@@ -65,9 +77,15 @@ class GameController {
    * DELETE games/:id
    */
   async destroy({ params, request, response }) {
-    const game = await Game.findOrFail(params.id);
+    try {
+      const game = await Game.findOrFail(params.id);
 
-    await game.delete();
+      await game.delete();
+    } catch (err) {
+      return response.status(err.status).send({
+        error: { message: "Algo não deu certo" },
+      });
+    }
   }
 }
 
