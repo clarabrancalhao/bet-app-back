@@ -6,7 +6,7 @@ class ResetPassword {
   }
   get rules() {
     return {
-      password: "required",
+      password: "required|confirmed",
       token: "required",
     };
   }
