@@ -6,7 +6,6 @@ class UserController {
   async store({ request }) {
     try {
       const data = request.only(["email", "password"]);
-      console.log(data);
 
       const user = await User.create(data);
 
@@ -18,6 +17,17 @@ class UserController {
         },
       });
     }
+  }
+
+  async update({ request }) {
+    const { email, password, user_id } = request.all();
+    const user = await User.findOrFail(user_id);
+
+    user.merge({ email, password });
+
+    await user.save();
+
+    return user;
   }
 }
 

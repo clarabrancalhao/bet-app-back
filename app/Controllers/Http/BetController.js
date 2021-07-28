@@ -77,9 +77,7 @@ class BetController {
 
       return bets;
     } catch (err) {
-      return response.status(err.status).send({
-        error: { message: "Algo não deu certo" },
-      });
+      return response.status(400);
     }
   }
 }
