@@ -14,15 +14,16 @@ class BetController {
    */
   async index({ params: { users_id }, request, response }) {
     try {
-      const { game_id } = request.get();
+      const { game_id, game_id_2, page } = request.all();
       const allBets = await Bet.query()
         .where("user_id", users_id)
         .with("game")
-        .fetch();
+        .paginate(page, 10);
       const bets = !!game_id
         ? await Bet.query()
             .where("user_id", users_id)
             .where("game_id", game_id)
+            .orWhere("game_id", game_id_2)
             .with("game")
             .fetch()
         : allBets;
